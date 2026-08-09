@@ -1,10 +1,12 @@
-package KVStore;
+package KVStore.strategy;
+
+import KVStore.KVStore;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class InMemoryKVStore<K,V> implements KVStore<K,V>{
+public class InMemoryKVStore<K,V> implements KVStore<K,V> {
 
-    ConcurrentHashMap<K,V> map;
+    private final ConcurrentHashMap<K,V> map;
 
     public InMemoryKVStore() {
         map = new ConcurrentHashMap<>();
@@ -21,7 +23,6 @@ public class InMemoryKVStore<K,V> implements KVStore<K,V>{
 
     @Override
     public void delete(K key) {
-        if(map.containsKey(key))
-            map.remove(key);
+        map.remove(key);
     }
 }
