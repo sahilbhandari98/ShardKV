@@ -1,0 +1,20 @@
+Durability
+
+PUT
+ ↓
+append WAL
+ ↓
+flush/force WAL to disk
+ ↓
+update map
+
+
+Recovery Algo
+
+1. Open WAL
+2. Read records sequentially
+3. For each valid record:
+       PUT    → map.put()
+       DELETE → map.remove()
+4. Ignore/truncate an incomplete final record
+5. Store is ready
