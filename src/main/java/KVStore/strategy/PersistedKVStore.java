@@ -38,6 +38,7 @@ public class PersistedKVStore<K,V> implements KVStore<K,V> {
         map.remove(key);
     }
 
+    @SuppressWarnings("unchecked")
     public void recovery() {
         List<WalRecord> walRecords = writeAheadLog.readAll();
         Collections.reverse(walRecords);
