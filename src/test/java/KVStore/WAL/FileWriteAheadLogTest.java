@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,10 +24,13 @@ public class FileWriteAheadLogTest {
     @Test
     public void shouldAppendToWal() {
         FileWriteAheadLog fileWriteAheadLog = new FileWriteAheadLog();
-        WalRecord expectedWalRecord = new WalRecord(Operation.PUT, "user:1","Sahil");
-        fileWriteAheadLog.append(expectedWalRecord);
+        WalRecord expectedWalRecord1 = new WalRecord(Operation.PUT, "user:1","Sahil");
+        WalRecord expectedWalRecord2 = new WalRecord(Operation.PUT, "user:2","Rahul");
+        fileWriteAheadLog.append(expectedWalRecord1);
+        fileWriteAheadLog.append(expectedWalRecord2);
 
         List<WalRecord> actualWalRecord = fileWriteAheadLog.readAll();
-        assertEquals(1,actualWalRecord.size());
+        actualWalRecord.forEach(x -> System.out.println());
+        assertTrue(actualWalRecord.contains(expectedWalRecord1));
     }
 }

@@ -1,9 +1,7 @@
 package KVStore.WAL;
 
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +31,7 @@ public class FileWriteAheadLog implements WriteAheadLog{
     public void append(WalRecord walRecord) {
         try {
             String appendRecord = walRecord.getOperation() + "|" + walRecord.getKey() + "|" + walRecord.getValue()+"\n";
-            Files.write(filePath, appendRecord.getBytes());
+            Files.write(filePath, appendRecord.getBytes(), StandardOpenOption.APPEND);
         } catch (IOException exception) {
             exception.printStackTrace();
         }

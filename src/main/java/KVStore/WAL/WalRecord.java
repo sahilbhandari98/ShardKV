@@ -1,5 +1,7 @@
 package KVStore.WAL;
 
+import java.util.Objects;
+
 public class WalRecord {
     private Operation operation;
     private String key;
@@ -21,5 +23,17 @@ public class WalRecord {
 
     public String getValue() {
         return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        WalRecord walRecord = (WalRecord) o;
+        return operation == walRecord.operation && Objects.equals(key, walRecord.key) && Objects.equals(value, walRecord.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(operation, key, value);
     }
 }
