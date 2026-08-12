@@ -3,6 +3,7 @@ package KVStore.WAL;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -22,7 +23,7 @@ public class FileWriteAheadLogTest {
     }
 
     @Test
-    public void shouldAppendToWal() {
+    public void shouldAppendToWal() throws IOException {
         FileWriteAheadLog fileWriteAheadLog = new FileWriteAheadLog();
         WalRecord expectedWalRecord1 = new WalRecord(Operation.PUT, "user:1","Sahil");
         WalRecord expectedWalRecord2 = new WalRecord(Operation.PUT, "user:2","Rahul");

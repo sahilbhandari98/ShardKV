@@ -2,6 +2,7 @@ package KVStore;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -12,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class InMemoryKVStoreTest {
 
     @Test
-    public void shouldStoreAndRetrieveValue() {
+    public void shouldStoreAndRetrieveValue() throws IOException {
         KVStore<String, String> store = KvStoreFactory.getKvStoreFactory();
         store.put("user:1", "Sahil");
 
@@ -20,7 +21,7 @@ public class InMemoryKVStoreTest {
     }
 
     @Test
-    public void shouldOverwriteExistingValue() {
+    public void shouldOverwriteExistingValue() throws IOException {
         KVStore<String, String> store = KvStoreFactory.getKvStoreFactory();
         store.put("user:1", "Sahil");
         store.put("user:1", "Rahul");
@@ -35,7 +36,7 @@ public class InMemoryKVStoreTest {
     }
 
     @Test
-    public void shouldDeleteMissingValue() {
+    public void shouldDeleteMissingValue() throws IOException {
         KVStore<String, String> store = KvStoreFactory.getKvStoreFactory();
         store.put("user:1", "Sahil");
         store.delete("user:2");
@@ -55,7 +56,11 @@ public class InMemoryKVStoreTest {
             futures.add(executorService.submit(() -> {
                 for (int i = 0; i < 100; i++) {
                     int key = id * 100 + i;
-                    store.put("user:"+key, "value:"+key);
+                    try {
+                        store.put("user:"+key, "value:"+key);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }));
         }

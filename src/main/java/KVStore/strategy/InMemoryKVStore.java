@@ -6,6 +6,7 @@ import KVStore.WAL.Operation;
 import KVStore.WAL.WalRecord;
 import KVStore.WAL.WriteAheadLog;
 
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class InMemoryKVStore<K,V> implements KVStore<K,V> {
@@ -23,8 +24,8 @@ public class InMemoryKVStore<K,V> implements KVStore<K,V> {
     }
 
     @Override
-    public void put(K key, V value) {
-        writeAheadLog.append(new WalRecord(Operation.PUT,(String) key, (String)value));
+    public void put(K key, V value) throws IOException {
+        writeAheadLog.append(new WalRecord(Operation.PUT, (String) key, (String) value));
         map.put(key, value);
     }
 
