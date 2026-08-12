@@ -29,7 +29,11 @@ public class FileWriteAheadLog implements WriteAheadLog{
 
     @Override
     public void append(WalRecord walRecord) throws IOException {
-        String appendRecord = walRecord.getOperation() + "|" + walRecord.getKey() + "|" + walRecord.getValue()+"\n";
+        String appendRecord = "";
+        if(Operation.PUT.equals(walRecord.getOperation()))
+            appendRecord = walRecord.getOperation() + "|" + walRecord.getKey() + "|" + walRecord.getValue()+"\n";
+        else if(Operation.DELETE.equals(walRecord.getOperation()))
+            appendRecord = walRecord.getOperation() + "|" + walRecord.getKey() + "\n";
         Files.write(filePath, appendRecord.getBytes(), StandardOpenOption.APPEND);
     }
 

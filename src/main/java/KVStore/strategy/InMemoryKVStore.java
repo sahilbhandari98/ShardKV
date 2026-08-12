@@ -12,10 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class InMemoryKVStore<K,V> implements KVStore<K,V> {
 
     private final ConcurrentHashMap<K,V> map;
-    private final WriteAheadLog writeAheadLog;
 
     public InMemoryKVStore() {
-        writeAheadLog = new FileWriteAheadLog();
         map = new ConcurrentHashMap<>();
     }
     @Override
@@ -25,7 +23,6 @@ public class InMemoryKVStore<K,V> implements KVStore<K,V> {
 
     @Override
     public void put(K key, V value) throws IOException {
-        writeAheadLog.append(new WalRecord(Operation.PUT, (String) key, (String) value));
         map.put(key, value);
     }
 

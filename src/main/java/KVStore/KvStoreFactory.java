@@ -1,6 +1,7 @@
 package KVStore;
 
 import KVStore.strategy.InMemoryKVStore;
+import KVStore.strategy.PersistedKVStore;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
@@ -20,7 +21,7 @@ public class KvStoreFactory {
     }
 
      public static <K,V> KVStore<K,V> getKvStoreFactory() {
-         return new InMemoryKVStore<>();
+         return new PersistedKVStore<>();
      }
 
 }

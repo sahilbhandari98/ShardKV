@@ -7,6 +7,11 @@ public class WalRecord {
     private String key;
     private String value;
 
+    public WalRecord(Operation operation, String key) {
+        this.operation = operation;
+        this.key = key;
+    }
+
     public WalRecord(Operation operation, String key, String value) {
         this.operation = operation;
         this.key = key;
