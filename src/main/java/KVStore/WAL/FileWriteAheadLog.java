@@ -45,7 +45,10 @@ public class FileWriteAheadLog implements WriteAheadLog{
             System.out.println(records);
             for(String record: records) {
                 String[] values = record.split("\\|");
-                walRecords.add(new WalRecord(Operation.valueOf(values[0]), values[1], values[2]));
+                if(Operation.PUT.equals(Operation.valueOf(values[0])))
+                    walRecords.add(new WalRecord(Operation.valueOf(values[0]), values[1], values[2]));
+                else if(Operation.DELETE.equals(Operation.valueOf(values[0])))
+                    walRecords.add(new WalRecord(Operation.valueOf(values[0]), values[1]));
             }
             return walRecords;
         } catch(IOException exception) {
