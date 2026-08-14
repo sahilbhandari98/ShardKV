@@ -4,6 +4,7 @@ import KVStore.strategy.InMemoryKVStore;
 import KVStore.strategy.KVStoreType;
 import KVStore.strategy.PersistedKVStore;
 
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -12,7 +13,13 @@ public class KvStoreFactory {
 
     static {
         strategies.put(KVStoreType.IN_MEMORY, () -> new InMemoryKVStore<>());
-        strategies.put(KVStoreType.PERSISTED, () -> new PersistedKVStore<>());
+        strategies.put(KVStoreType.PERSISTED, () -> {
+            try {
+                return new PersistedKVStore<>();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     public static <K,V> KVStore<K,V> getKvStoreFactory(KVStoreType type) {

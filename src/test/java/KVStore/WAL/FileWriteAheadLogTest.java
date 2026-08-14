@@ -1,6 +1,7 @@
 package KVStore.WAL;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,16 +16,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FileWriteAheadLogTest {
 
+    @TempDir
+    Path tempDir;
+
     @Test
     public void shouldTestDirCreationOrExistence() {
-        FileWriteAheadLog fileWriteAheadLog = new FileWriteAheadLog();
+        Path tempFilePath = tempDir.resolve("wal.log");
+        FileWriteAheadLog fileWriteAheadLog = new FileWriteAheadLog(tempFilePath);
         boolean isDirPresent=Files.exists(Path.of("data"));
         assertTrue(isDirPresent);
     }
 
     @Test
     public void shouldAppendToWal() throws IOException {
-        FileWriteAheadLog fileWriteAheadLog = new FileWriteAheadLog();
+        Path tempFilePath = tempDir.resolve("wal.log");
+        FileWriteAheadLog fileWriteAheadLog = new FileWriteAheadLog(tempFilePath);
         WalRecord expectedWalRecord1 = new WalRecord(Operation.PUT, "user:1","Sahil");
         WalRecord expectedWalRecord2 = new WalRecord(Operation.PUT, "user:2","Rahul");
         fileWriteAheadLog.append(expectedWalRecord1);

@@ -16,7 +16,7 @@ public class PersistedKVStore<K,V> implements KVStore<K,V> {
     private final ConcurrentHashMap<K,V> map;
     private final WriteAheadLog writeAheadLog;
 
-    public PersistedKVStore() {
+    public PersistedKVStore() throws IOException {
         writeAheadLog = new FileWriteAheadLog();
         map = new ConcurrentHashMap<>();
         recovery();
@@ -39,9 +39,8 @@ public class PersistedKVStore<K,V> implements KVStore<K,V> {
     }
 
     @SuppressWarnings("unchecked")
-    public void recovery() {
+    public void recovery() throws IOException {
         List<WalRecord> walRecords = writeAheadLog.readAll();
-        Collections.reverse(walRecords);
         for(WalRecord walRecord : walRecords) {
             if(Operation.PUT.equals(walRecord.getOperation())) {
                 map.put((K) walRecord.getKey(), (V)walRecord.getValue());

@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface WriteAheadLog {
     void append(WalRecord walRecord) throws IOException;
-    List<WalRecord> readAll();
+    List<WalRecord> readAll() throws IOException;
 }
