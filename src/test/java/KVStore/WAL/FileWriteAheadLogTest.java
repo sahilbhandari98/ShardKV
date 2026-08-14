@@ -38,6 +38,9 @@ public class FileWriteAheadLogTest {
 
         List<WalRecord> actualWalRecord = fileWriteAheadLog.readAll();
         actualWalRecord.forEach(x -> System.out.println());
-        assertTrue(actualWalRecord.contains(expectedWalRecord1));
+        //assertTrue(actualWalRecord.contains(expectedWalRecord1));
+        assertEquals(2, actualWalRecord.size());
+        assertEquals(expectedWalRecord1, actualWalRecord.get(0));
+        assertEquals(expectedWalRecord2, actualWalRecord.get(1));
     }
 }
