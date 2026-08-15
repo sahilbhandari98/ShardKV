@@ -1,6 +1,7 @@
 package KVStore.WAL;
 
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,9 +54,16 @@ public class FileWriteAheadLog implements WriteAheadLog{
     public List<WalRecord> readAll() throws IOException {
     List<WalRecord> walRecords = new ArrayList<>();
         String records = Files.readString(filePath);
+        int lastNewLine = records.lastIndexOf('\n');
+        boolean endsWithNewLine = records.endsWith("\n");
+
+        if(!endsWithNewLine) {
+            try (FileChannel channel = FileChannel.open(filePath, StandardOpenOption.WRITE)) {
+                channel.truncate(lastNewLine + 1);
+            }
+        }
         System.out.println("Raw text from file "+records);
         String[] lines = records.split("\n");
-        boolean endsWithNewLine = records.endsWith("\n");
         System.out.println(Arrays.toString(lines));
         for(int i=0;i<lines.length;i++) {
             if(i == lines.length - 1 && !endsWithNewLine) {
@@ -64,10 +72,16 @@ public class FileWriteAheadLog implements WriteAheadLog{
             }
             String record = lines[i];
             String[] values = record.split("\\|");
-            if(Operation.PUT.equals(Operation.valueOf(values[0])))
-                walRecords.add(new WalRecord(Operation.valueOf(values[0]), values[1], values[2]));
-            else if(Operation.DELETE.equals(Operation.valueOf(values[0])))
-                walRecords.add(new WalRecord(Operation.valueOf(values[0]), values[1]));
+            try {
+                if (Operation.PUT.equals(Operation.valueOf(values[0])))
+                    walRecords.add(new WalRecord(Operation.valueOf(values[0]), values[1], values[2]));
+                else if (Operation.DELETE.equals(Operation.valueOf(values[0])))
+                    walRecords.add(new WalRecord(Operation.valueOf(values[0]), values[1]));
+                else
+                    System.out.println("Ignore Invalid WAL Record");
+            } catch (IllegalArgumentException illegalArgumentException) {
+                System.out.println("Ignore invalid WAL record "+illegalArgumentException.getMessage());
+            }
         }
         return walRecords;
     }

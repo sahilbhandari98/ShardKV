@@ -33,10 +33,12 @@ public class Main {
     }
 
     public static void testSplit() {
-        String str = "PUT|user:1|Sahil\n"+"PUT|user:2|Rahil\n"+"PUT|user:3|Ajay\n";
+        String str = "PUT|user:1|Sahil\n"+"PUT|user:2|Rahil\n"+"PUT|user:3|Ajay";
         boolean endWithNewLine = str.endsWith("\n");
+        int idxOfLastSeparator = str.lastIndexOf("\n");
         String[] records = str.split("\n",-1);
 
+        System.out.println("index of last separator - "+idxOfLastSeparator);
         for(int i=0;i< records.length;i++) {
             String record = records[i];
             if(i == records.length - 1 && !endWithNewLine) {
