@@ -54,6 +54,10 @@ public class FileWriteAheadLog implements WriteAheadLog{
     public List<WalRecord> readAll() throws IOException {
     List<WalRecord> walRecords = new ArrayList<>();
         String records = Files.readString(filePath);
+        if(records.isBlank() || records.isEmpty()) {
+            System.out.println("Empty WAL file");
+            return walRecords;
+        }
         int lastNewLine = records.lastIndexOf('\n');
         boolean endsWithNewLine = records.endsWith("\n");
 

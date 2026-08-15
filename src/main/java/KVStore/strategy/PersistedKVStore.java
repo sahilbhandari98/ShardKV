@@ -17,7 +17,11 @@ public class PersistedKVStore<K,V> implements KVStore<K,V> {
     private final WriteAheadLog writeAheadLog;
 
     public PersistedKVStore() throws IOException {
-        writeAheadLog = new FileWriteAheadLog();
+        this(new FileWriteAheadLog());
+    }
+
+    public PersistedKVStore(WriteAheadLog writeAheadLog) throws IOException {
+        this.writeAheadLog = writeAheadLog;
         map = new ConcurrentHashMap<>();
         recovery();
     }
