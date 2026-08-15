@@ -3,6 +3,8 @@ package KVStore.WAL;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class FileWriteAheadLog implements WriteAheadLog{
@@ -50,9 +52,17 @@ public class FileWriteAheadLog implements WriteAheadLog{
     @Override
     public List<WalRecord> readAll() throws IOException {
     List<WalRecord> walRecords = new ArrayList<>();
-        List<String> records = Files.readAllLines(filePath);
-        System.out.println(records);
-        for(String record: records) {
+        String records = Files.readString(filePath);
+        System.out.println("Raw text from file "+records);
+        String[] lines = records.split("\n");
+        boolean endsWithNewLine = records.endsWith("\n");
+        System.out.println(Arrays.toString(lines));
+        for(int i=0;i<lines.length;i++) {
+            if(i == lines.length - 1 && !endsWithNewLine) {
+                System.out.println("Ignoring partially written record");
+                continue;
+            }
+            String record = lines[i];
             String[] values = record.split("\\|");
             if(Operation.PUT.equals(Operation.valueOf(values[0])))
                 walRecords.add(new WalRecord(Operation.valueOf(values[0]), values[1], values[2]));

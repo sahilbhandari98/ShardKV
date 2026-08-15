@@ -4,6 +4,7 @@ import KVStore.KVStore;
 import KVStore.KvStoreFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,5 +28,21 @@ public class Main {
         executorService.shutdown();
 
         System.out.println(cache.get("123"));
+
+        testSplit();
+    }
+
+    public static void testSplit() {
+        String str = "PUT|user:1|Sahil\n"+"PUT|user:2|Rahil\n"+"PUT|user:3|Ajay\n";
+        boolean endWithNewLine = str.endsWith("\n");
+        String[] records = str.split("\n",-1);
+
+        for(int i=0;i< records.length;i++) {
+            String record = records[i];
+            if(i == records.length - 1 && !endWithNewLine) {
+                System.out.println("Ignoring partially written record");
+            }
+            System.out.println(record);
+        }
     }
 }
