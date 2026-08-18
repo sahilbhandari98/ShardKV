@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,5 +46,28 @@ public class PersistedKVStoreTest {
 
         store = new PersistedKVStore<>(new FileWriteAheadLog(tempDir.resolve("wal.log")));
         assertNull(store.get("user:1"));
+    }
+
+    @Test
+    public void shouldRecoverFromPartiallyWrittenRecords() throws IOException {
+        Path walPath = tempDir.resolve("wal.log");
+        Files.writeString(walPath,
+                "PUT|user:1|Sahil\n"+
+                "PUT|user:2|Rahul\n"+
+                "PUT|user:3|Sah"
+        );
+
+        KVStore<String, String> store = new PersistedKVStore<>(new FileWriteAheadLog(tempDir.resolve("wal.log")));
+
+        assertEquals("Sahil", store.get("user:1"));
+        assertEquals("Rahul", store.get("user:2"));
+        assertNull( store.get("user:3"));
+
+        store.put("user:1","Harshit");
+        store.put("user:4","Samar");
+        store.delete("user:4");
+
+        assertEquals("Harshit", store.get("user:1"));
+        assertNull(store.get("user:4"));
     }
 }

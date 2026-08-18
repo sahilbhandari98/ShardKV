@@ -27,7 +27,7 @@ public class PersistedKVStore<K,V> implements KVStore<K,V> {
     }
     @Override
     public V get(K key) {
-        System.out.println(map.size());
+        //System.out.println(map.size());
         return map.get(key);
     }
 
