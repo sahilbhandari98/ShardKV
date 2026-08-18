@@ -2,10 +2,10 @@ package KVStore.WAL;
 
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class FileWriteAheadLog implements WriteAheadLog{
@@ -47,7 +47,10 @@ public class FileWriteAheadLog implements WriteAheadLog{
             appendRecord = walRecord.getOperation() + "|" + walRecord.getKey() + "|" + walRecord.getValue()+"\n";
         else if(Operation.DELETE.equals(walRecord.getOperation()))
             appendRecord = walRecord.getOperation() + "|" + walRecord.getKey() + "\n";
-        Files.write(filePath, appendRecord.getBytes(), StandardOpenOption.APPEND);
+        Files.write(filePath,
+                appendRecord.getBytes(StandardCharsets.UTF_8),
+                StandardOpenOption.APPEND,
+                StandardOpenOption.SYNC);
     }
 
     @Override
@@ -66,9 +69,9 @@ public class FileWriteAheadLog implements WriteAheadLog{
                 channel.truncate(lastNewLine + 1);
             }
         }
-        System.out.println("Raw text from file "+records);
+        //System.out.println("Raw text from file "+records);
         String[] lines = records.split("\n");
-        System.out.println(Arrays.toString(lines));
+        //System.out.println(Arrays.toString(lines));
         for(int i=0;i<lines.length;i++) {
             if(i == lines.length - 1 && !endsWithNewLine) {
                 System.out.println("Ignoring partially written record");
@@ -77,9 +80,10 @@ public class FileWriteAheadLog implements WriteAheadLog{
             String record = lines[i];
             String[] values = record.split("\\|");
             try {
-                if (Operation.PUT.equals(Operation.valueOf(values[0])))
+                Operation operation = Operation.valueOf(values[0]);
+                if (values.length == 3 && Operation.PUT.equals(operation))
                     walRecords.add(new WalRecord(Operation.valueOf(values[0]), values[1], values[2]));
-                else if (Operation.DELETE.equals(Operation.valueOf(values[0])))
+                else if (values.length == 2 && Operation.DELETE.equals(operation))
                     walRecords.add(new WalRecord(Operation.valueOf(values[0]), values[1]));
                 else
                     System.out.println("Ignore Invalid WAL Record");
