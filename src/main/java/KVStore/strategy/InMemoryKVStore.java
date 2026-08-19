@@ -1,10 +1,6 @@
 package KVStore.strategy;
 
 import KVStore.KVStore;
-import KVStore.WAL.FileWriteAheadLog;
-import KVStore.WAL.Operation;
-import KVStore.WAL.WalRecord;
-import KVStore.WAL.WriteAheadLog;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;

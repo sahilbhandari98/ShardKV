@@ -5,7 +5,6 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class FileWriteAheadLog implements WriteAheadLog{
@@ -58,7 +57,7 @@ public class FileWriteAheadLog implements WriteAheadLog{
     List<WalRecord> walRecords = new ArrayList<>();
         String records = Files.readString(filePath);
         if(records.isBlank() || records.isEmpty()) {
-            System.out.println("Empty WAL file");
+            //System.out.println("Empty WAL file");
             return walRecords;
         }
         int lastNewLine = records.lastIndexOf('\n');
@@ -74,11 +73,11 @@ public class FileWriteAheadLog implements WriteAheadLog{
         //System.out.println(Arrays.toString(lines));
         for(int i=0;i<lines.length;i++) {
             if(i == lines.length - 1 && !endsWithNewLine) {
-                System.out.println("Ignoring partially written record");
+                //System.out.println("Ignoring partially written record");
                 continue;
             }
             String record = lines[i];
-            String[] values = record.split("\\|");
+            String[] values = record.split("\\|",-1);
             try {
                 Operation operation = Operation.valueOf(values[0]);
                 if (values.length == 3 && Operation.PUT.equals(operation))
@@ -88,7 +87,7 @@ public class FileWriteAheadLog implements WriteAheadLog{
                 else
                     System.out.println("Ignore Invalid WAL Record");
             } catch (IllegalArgumentException illegalArgumentException) {
-                System.out.println("Ignore invalid WAL record "+illegalArgumentException.getMessage());
+                //System.out.println("Ignore invalid WAL record " + illegalArgumentException.getMessage());
             }
         }
         return walRecords;

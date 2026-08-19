@@ -70,4 +70,28 @@ public class PersistedKVStoreTest {
         assertEquals("Harshit", store.get("user:1"));
         assertNull(store.get("user:4"));
     }
+
+    @Test
+    public void shouldRecoverFromMalformedRecords() throws IOException {
+        Path walPath = tempDir.resolve("wal.log");
+        Files.writeString(walPath,
+                "PUT|user:4|"+
+                        "PUT|user:1|Sahil|Rahul"+
+                        "INVALID|user:2|Rahul\n"+
+                        "DELETE"
+        );
+
+        KVStore<String, String> store = new PersistedKVStore<>(new FileWriteAheadLog(tempDir.resolve("wal.log")));
+
+        assertNull( store.get("user:1"));
+    }
+
+    @Test
+    public void shouldReturnEmptyValueCorrectly() throws IOException {
+        KVStore<String, String> store = new PersistedKVStore<>(new FileWriteAheadLog(tempDir.resolve("wal.log")));
+        store.put("user:1", "");
+
+        store = new PersistedKVStore<>(new FileWriteAheadLog(tempDir.resolve("wal.log")));
+        assertEquals("", store.get("user:1"));
+    }
 }
