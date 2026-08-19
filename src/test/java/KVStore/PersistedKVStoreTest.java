@@ -1,5 +1,6 @@
 package KVStore;
 
+import KVStore.WAL.FailingWriteAheadLog;
 import KVStore.WAL.FileWriteAheadLog;
 import KVStore.strategy.PersistedKVStore;
 import org.junit.jupiter.api.Test;
@@ -10,13 +11,21 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PersistedKVStoreTest {
 
     @TempDir
     Path tempDir;
+
+    @Test
+    public void shouldCreateWalFile() {
+        Path walFilePath = tempDir.resolve("data.log");
+        new FileWriteAheadLog(walFilePath);
+
+        assertTrue(Files.exists(walFilePath));
+        assertTrue(Files.isRegularFile(walFilePath));
+    }
 
     @Test
     public void testWalRecovery() throws IOException {
@@ -93,5 +102,14 @@ public class PersistedKVStoreTest {
 
         store = new PersistedKVStore<>(new FileWriteAheadLog(tempDir.resolve("wal.log")));
         assertEquals("", store.get("user:1"));
+    }
+
+    @Test
+    public void shouldNotUpdateMapWhenWriteFails() throws IOException {
+        KVStore<String, String> store = new PersistedKVStore<>(new FailingWriteAheadLog());
+
+        assertThrows(IOException.class, () -> store.put("user:1","sahil"));
+        assertNull(store.get("user:1"));
+
     }
 }
