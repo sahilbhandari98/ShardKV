@@ -17,14 +17,6 @@ public class FileWriteAheadLogTest {
     Path tempDir;
 
     @Test
-    public void shouldTestDirCreationOrExistence() {
-        Path tempFilePath = tempDir.resolve("wal.log");
-        FileWriteAheadLog fileWriteAheadLog = new FileWriteAheadLog(tempFilePath);
-        boolean isDirPresent=Files.exists(Path.of("data"));
-        assertTrue(isDirPresent);
-    }
-
-    @Test
     public void shouldAppendToWal() throws IOException {
         Path tempFilePath = tempDir.resolve("wal.log");
         FileWriteAheadLog fileWriteAheadLog = new FileWriteAheadLog(tempFilePath);

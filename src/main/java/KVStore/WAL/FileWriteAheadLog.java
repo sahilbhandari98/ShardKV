@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileWriteAheadLog implements WriteAheadLog{
-    private Path dirPath;
-    //private Path filePath;
     private static final Path DEFAULT_PATH = Path.of("data","wal.log");
     private final Path filePath;
 
