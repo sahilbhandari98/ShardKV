@@ -17,7 +17,7 @@ public class RequestHandler {
     }
     public Response handleRequest(String request) throws IOException {
         Request req = RequestParser.requestParser(request);
-        KVNode node = shardManager.getShard(req.getKey());
+        KVNode node = shardManager.getNode(req.getKey());
         return switch (req.getOperation()) {
             case PUT -> {
                 System.out.println(req.getKey());

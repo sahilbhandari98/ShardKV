@@ -12,7 +12,7 @@ public class ShardManager {
         this.keyPartitioner = new KeyPartitioner(numberOfShards);
         this.kvNodes = kvNodes;
     }
-    public KVNode getShard(String key) {
+    public KVNode getNode(String key) {
         int shard = keyPartitioner.getShard(key);
         return kvNodes.get(shard);
     }

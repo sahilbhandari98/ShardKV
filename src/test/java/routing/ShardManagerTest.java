@@ -17,7 +17,7 @@ public class ShardManagerTest {
         KVNode node = new KVNode("node-0", new PersistedKVStore(new FileWriteAheadLog()));
         KVNode node1 = new KVNode("node-1", new PersistedKVStore(new FileWriteAheadLog()));
         ShardManager shardManager = new ShardManager(2, List.of(node, node1));
-        assertEquals(node, shardManager.getShard("user:1"));
-        assertEquals(node1, shardManager.getShard("user:2"));
+        assertEquals(node, shardManager.getNode("user:1"));
+        assertEquals(node1, shardManager.getNode("user:2"));
     }
 }
