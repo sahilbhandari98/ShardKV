@@ -25,7 +25,7 @@ public class RequestHandlerTest {
                 (new FileWriteAheadLog(tempPath.resolve(Path.of("data","wal0.log")))));
         KVNode node1 = new KVNode("node-1", new PersistedKVStore
                 (new FileWriteAheadLog(tempPath.resolve(Path.of("data","wal1.log")))));
-        ShardManager shardManager = new ShardManager(2, List.of(node, node1));
+        ShardManager shardManager = new ShardManager(List.of(node, node1));
         RequestHandler requestHandler = new RequestHandler(shardManager);
 
         Response actualResponse = requestHandler.handleRequest("PUT|user:1|Sahil");

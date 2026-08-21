@@ -46,7 +46,7 @@ public class Main {
         KVNode node1 = new KVNode("node-1", new PersistedKVStore(new FileWriteAheadLog(Path.of("data","wal1.log"))));
         KVNode node2 = new KVNode("node-2", new PersistedKVStore(new FileWriteAheadLog(Path.of("data","wal2.log"))));
 
-        ShardManager shardManager = new ShardManager(3, List.of(node0, node1, node2));
+        ShardManager shardManager = new ShardManager(List.of(node0, node1, node2));
 
         RequestHandler requestHandler = new RequestHandler(shardManager);
 
