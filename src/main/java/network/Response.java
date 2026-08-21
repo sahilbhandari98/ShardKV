@@ -1,5 +1,7 @@
 package network;
 
+import java.util.Objects;
+
 public class Response {
 
     public enum Status {
@@ -33,5 +35,17 @@ public class Response {
 
     public String getShard() {
         return this.shard;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Response response = (Response) o;
+        return Objects.equals(payload, response.payload) && Objects.equals(shard, response.shard) && status == response.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(payload, shard, status);
     }
 }

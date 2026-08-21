@@ -5,8 +5,8 @@ import node.KVNode;
 import java.util.List;
 
 public class ShardManager {
-    KeyPartitioner keyPartitioner;
-    List<KVNode> kvNodes;
+    private KeyPartitioner keyPartitioner;
+    private List<KVNode> kvNodes;
 
     public ShardManager(int numberOfShards, List<KVNode> kvNodes) {
         this.keyPartitioner = new KeyPartitioner(numberOfShards);
