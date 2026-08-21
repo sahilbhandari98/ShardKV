@@ -9,7 +9,7 @@ public class RequestParser {
             throw new IllegalArgumentException("Invalid request");
         }
 
-        Operation operation = Operation.valueOf(values[0]);
+        RequestOperation operation = RequestOperation.valueOf(values[0]);
 
         return switch (operation) {
             case PUT -> {
