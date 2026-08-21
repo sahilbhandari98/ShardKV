@@ -1,5 +1,5 @@
 package KVStore.WAL;
 
 public enum Operation {
-    PUT,DELETE;
+    PUT,GET,DELETE;
 }

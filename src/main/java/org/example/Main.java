@@ -1,32 +1,36 @@
 package org.example;
 
-import KVStore.KVStore;
-import KVStore.KvStoreFactory;
 
+import java.awt.image.BufferedImageFilter;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
 
 public class Main {
     public static void main(String[] args) throws ExecutionException, InterruptedException, IOException {
-        KVStore<String, String> cache = KvStoreFactory.getKvStoreFactory();
-        cache.put("123","sahil");
-        cache.put("234","rahul");
-        cache.delete("234");
-        System.out.println(cache.get("123"));
+        String node = args[0];
+        int port = Integer.parseInt(args[1]);
+        String path = args[2];
 
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
-        executorService.submit(() -> {
-            try {
-                cache.put("123","sahil_thread");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        ServerSocket serverSocket = new ServerSocket(port);
+
+        while(true) {
+            System.out.println("start recieveing data");
+            Socket socket = serverSocket.accept();
+            InputStream inputStream = socket.getInputStream();
+
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String request;
+            while((request = bufferedReader.readLine()) != null) {
+                System.out.println(request);
             }
-        }).get();
-        executorService.shutdown();
-
-        System.out.println(cache.get("123"));
-
+            socket.close();
+            //System.out.println(request);
+        }
     }
 }
