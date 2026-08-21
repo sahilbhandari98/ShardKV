@@ -50,11 +50,13 @@ public class Main {
 
         RequestHandler requestHandler = new RequestHandler(shardManager);
 
-        Response response = requestHandler.handleRequest("PUT|user:1|Sahil");
-        Response response1 = requestHandler.handleRequest("PUT|user:2|Rahul");
-        Response response2 = requestHandler.handleRequest("PUT|user::39|Ajay");
+        Response response = requestHandler.handleRequest("PUT|a:1|Sahil");
+        Response response1 = requestHandler.handleRequest("PUT|b:2|Rahul");
+        Response response2 = requestHandler.handleRequest("PUT|c::39|Ajay");
+        Response response3 = requestHandler.handleRequest("GET|a:1");
         System.out.println(response.getPayload() +" served by shard - "+ response.getShard());
         System.out.println(response1.getPayload() +" served by shard - "+ response1.getShard());
         System.out.println(response2.getPayload() +" served by shard - "+ response2.getShard());
+        System.out.println(response3.getPayload() +" served by shard - "+ response3.getShard());
     }
 }

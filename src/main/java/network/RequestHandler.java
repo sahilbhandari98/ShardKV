@@ -20,6 +20,7 @@ public class RequestHandler {
         KVNode node = shardManager.getShard(req.getKey());
         return switch (req.getOperation()) {
             case PUT -> {
+                System.out.println(req.getKey());
                 node.put(req.getKey(), req.getValue());
                 yield success(node.getNodeID());
             }

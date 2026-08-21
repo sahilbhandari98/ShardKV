@@ -16,13 +16,13 @@ public class RequestParser {
                 if(values.length != 3) {
                     throw new IllegalArgumentException("Invalid operation");
                 }
-                yield new Request(operation, values[0], values[1]);
+                yield new Request(operation, values[1], values[2]);
             }
             case GET,DELETE -> {
                 if(values.length != 2) {
                     throw new IllegalArgumentException("Invalid Operation");
                 }
-                yield new Request(operation, values[0]);
+                yield new Request(operation, values[1]);
             }
         };
     }
