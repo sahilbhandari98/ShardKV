@@ -7,8 +7,6 @@ public class KeyPartitioner {
         this.numberOfShards = numberOfShards;
     }
     public int getShard(String key) {
-        int shardNo =  Math.floorMod(key.hashCode(), numberOfShards);
-        System.out.println("hash is "+key.hashCode());
-        return shardNo;
+        return Math.floorMod(key.hashCode(), numberOfShards);
     }
 }
