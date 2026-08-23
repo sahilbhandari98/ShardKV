@@ -3,18 +3,18 @@ package org.example;
 
 import KVStore.WAL.FileWriteAheadLog;
 import KVStore.strategy.PersistedKVStore;
+import network.ClusterConfiguration;
 import network.RequestHandler;
 import network.Response;
 import node.KVNode;
+import node.NodeInfo;
 import routing.ShardManager;
 
-import java.awt.image.BufferedImageFilter;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
+import java.nio.Buffer;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -42,21 +42,72 @@ public class Main {
 //            //System.out.println(request);
 //        }
 
-        KVNode node0 = new KVNode("node-0", new PersistedKVStore(new FileWriteAheadLog(Path.of("data","wal0.log"))));
-        KVNode node1 = new KVNode("node-1", new PersistedKVStore(new FileWriteAheadLog(Path.of("data","wal1.log"))));
-        KVNode node2 = new KVNode("node-2", new PersistedKVStore(new FileWriteAheadLog(Path.of("data","wal2.log"))));
 
-        ShardManager shardManager = new ShardManager(List.of(node0, node1, node2));
-
+//        String caller = args[0];
+//        if("A".equalsIgnoreCase(caller)) {
+//            serverA(args);
+//        } else if("B".equalsIgnoreCase(caller)) {
+//            serverB(args);
+//        }
+        NodeInfo nodeInfo = new NodeInfo("node-0",9090);
+        NodeInfo nodeInfo1 = new NodeInfo("node-1",9091);
+        NodeInfo nodeInfo2 = new NodeInfo("node-2",9092);
+        ClusterConfiguration clusterConfiguration = new ClusterConfiguration(args[0], List.of(nodeInfo, nodeInfo1, nodeInfo2));
+        ShardManager shardManager = new ShardManager(clusterConfiguration);
         RequestHandler requestHandler = new RequestHandler(shardManager);
+        Response response = requestHandler.handleRequest("PUT|user:1|Sahil");
+        System.out.println(response.getPayload());
+    }
 
-        Response response = requestHandler.handleRequest("PUT|a:1|Sahil");
-        Response response1 = requestHandler.handleRequest("PUT|b:2|Rahul");
-        Response response2 = requestHandler.handleRequest("PUT|c::39|Ajay");
-        Response response3 = requestHandler.handleRequest("GET|a:1");
-        System.out.println(response.getPayload() +" served by shard - "+ response.getShard());
-        System.out.println(response1.getPayload() +" served by shard - "+ response1.getShard());
-        System.out.println(response2.getPayload() +" served by shard - "+ response2.getShard());
-        System.out.println(response3.getPayload() +" served by shard - "+ response3.getShard());
+    public static void serverA(String[] args) throws IOException {
+        String node = args[1];
+        int port = Integer.parseInt(args[2]);
+        String path = args[3];
+
+        ServerSocket serverSocket = new ServerSocket(port);
+
+        while(true) {
+            Socket socket = serverSocket.accept();
+            Socket targetSocket = new Socket("localhost",9091);
+            System.out.println("Request Router");
+            BufferedReader inputSocketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            BufferedReader targetSocketReader = new BufferedReader(new InputStreamReader(targetSocket.getInputStream()));
+            BufferedWriter inputSocketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            BufferedWriter targetSocketWriter = new BufferedWriter(new OutputStreamWriter(targetSocket.getOutputStream()));
+
+            String request = inputSocketReader.readLine();
+
+            System.out.println("client A recieved from nc: "+request);
+            targetSocketWriter.write(request+"\n");
+            targetSocketWriter.flush();
+
+
+            String response = targetSocketReader.readLine();
+            System.out.println("client A recieved from B: "+response);
+
+            inputSocketWriter.write("client A write to nc: "+response);
+            inputSocketWriter.flush();
+        }
+    }
+
+    public static void serverB(String[] args) throws IOException {
+        String node = args[1];
+        int port = Integer.parseInt(args[2]);
+        String path = args[3];
+
+        ServerSocket serverSocket = new ServerSocket(port);
+
+        while(true) {
+            Socket socket = serverSocket.accept();
+            BufferedWriter socketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            BufferedReader socketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String input;
+            while((input = socketReader.readLine()) != null) {
+                System.out.println("client B recieved from A: "+input);
+                socketWriter.write("success\n");
+                socketWriter.flush();
+            }
+
+        }
     }
 }

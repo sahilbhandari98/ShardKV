@@ -6,10 +6,12 @@ import java.io.IOException;
 
 public class KVNode {
     private String nodeID;
+    private int port;
     private KVStore<String, String> kvStore;
 
-    public KVNode(String nodeID, KVStore kvStore) {
+    public KVNode(String nodeID, int port, KVStore kvStore) {
         this.nodeID = nodeID;
+        this.port = port;
         this.kvStore = kvStore;
     }
 
