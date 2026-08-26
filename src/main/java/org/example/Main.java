@@ -66,8 +66,12 @@ public class Main {
         while(true) {
             Socket socket = serverSocket.accept();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            Response response = requestHandler.handleRequest(socket, bufferedReader.readLine());
+            Response response = requestHandler.handleRequest(bufferedReader.readLine());
             System.out.println(response.getPayload());
+
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            bufferedWriter.write(response.getPayload()+"\n");
+            bufferedWriter.flush();
         }
 
 

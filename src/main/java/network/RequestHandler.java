@@ -23,7 +23,7 @@ public class RequestHandler {
         this.clusterConfiguration = clusterConfiguration;
         this.nodeManager = nodeManager;
     }
-    public Response handleRequest(Socket socket, String request) throws IOException {
+    public Response handleRequest(String request) throws IOException {
         Request req = RequestParser.requestParser(request);
         NodeInfo node = shardManager.getNode(req.getKey());
         Response response;
@@ -31,7 +31,7 @@ public class RequestHandler {
             response = executeLocally(req, nodeManager.getKvNode());
         } else {
             response = null;
-            remoteCall(socket, req, node);
+            remoteCall(req, node);
         }
         return response;
     }
@@ -54,10 +54,9 @@ public class RequestHandler {
         };
     }
 
-    public Response remoteCall(Socket socket, Request req, NodeInfo node) throws IOException {
-//        ServerSocket serverSocket = new ServerSocket(node.getPort());
+    public Response remoteCall( Request req, NodeInfo node) throws IOException {
 
-//        Socket socket = serverSocket.accept();
+        Socket socket = new Socket("localhost", node.getPort());
         BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         bufferedWriter.write(req.getOperation().name()+"|"+req.getKey()+"|"+req.getValue()+"\n");
         bufferedWriter.flush();
