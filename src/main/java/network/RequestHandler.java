@@ -30,8 +30,7 @@ public class RequestHandler {
         if(node.getNodeId().equals(clusterConfiguration.getCurrentNodeId())) {
             response = executeLocally(req, nodeManager.getKvNode());
         } else {
-            response = null;
-            remoteCall(req, node);
+            response = remoteCall(req, node);
         }
         return response;
     }
