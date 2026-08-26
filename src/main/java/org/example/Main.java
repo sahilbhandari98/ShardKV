@@ -8,6 +8,7 @@ import network.RequestHandler;
 import network.Response;
 import node.KVNode;
 import node.NodeInfo;
+import node.NodeManager;
 import routing.ShardManager;
 
 import java.io.*;
@@ -49,16 +50,20 @@ public class Main {
 //        } else if("B".equalsIgnoreCase(caller)) {
 //            serverB(args);
 //        }
-        NodeInfo nodeInfo = new NodeInfo("node-0",9090);
-        NodeInfo nodeInfo1 = new NodeInfo("node-1",9091);
-        NodeInfo nodeInfo2 = new NodeInfo("node-2",9092);
-        ClusterConfiguration clusterConfiguration = new ClusterConfiguration(args[0], List.of(nodeInfo, nodeInfo1, nodeInfo2));
-        ShardManager shardManager = new ShardManager(clusterConfiguration);
+        List<NodeInfo> nodes = initializeCluster();
+        ClusterConfiguration clusterConfiguration = new ClusterConfiguration(args[0], nodes);
+        NodeManager nodeManager = new NodeManager(clusterConfiguration);
+        ShardManager shardManager = new ShardManager(nodeManager);
         RequestHandler requestHandler = new RequestHandler(shardManager);
         Response response = requestHandler.handleRequest("PUT|user:1|Sahil");
         System.out.println(response.getPayload());
     }
-
+    public static List<NodeInfo> initializeCluster() {
+        NodeInfo nodeInfo = new NodeInfo("node-0",9090);
+        NodeInfo nodeInfo1 = new NodeInfo("node-1",9091);
+        NodeInfo nodeInfo2 = new NodeInfo("node-2",9092);
+        return List.of(nodeInfo, nodeInfo1, nodeInfo2);
+    }
     public static void serverA(String[] args) throws IOException {
         String node = args[1];
         int port = Integer.parseInt(args[2]);
