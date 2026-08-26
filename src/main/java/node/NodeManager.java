@@ -20,7 +20,7 @@ public class NodeManager {
                 .filter(node -> node.getNodeId().equals(clusterConfiguration.getCurrentNodeId()))
                 .findAny();
         this.kvNode = new KVNode(clusterConfiguration.getCurrentNodeId(), nodeInfo.get().getPort(),
-                new PersistedKVStore<>(new FileWriteAheadLog(Path.of(walName))));
+                new PersistedKVStore<>(new FileWriteAheadLog(Path.of("data",walName))));
     }
 
     public KVNode getKvNode() {
