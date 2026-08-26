@@ -20,4 +20,8 @@ public class ClusterConfiguration {
     public List<NodeInfo> getAllNodes() {
         return allNodes;
     }
+
+    public NodeInfo getNode(String currentNodeId) {
+        return allNodes.stream().filter(node -> node.getNodeId().equals(currentNodeId)).findAny().get();
+    }
 }

@@ -50,13 +50,27 @@ public class Main {
 //        } else if("B".equalsIgnoreCase(caller)) {
 //            serverB(args);
 //        }
+        String nodeId = args[0];
+        int port = Integer.parseInt(args[1]);
+
+        ServerSocket serverSocket = new ServerSocket(port);
+
         List<NodeInfo> nodes = initializeCluster();
-        ClusterConfiguration clusterConfiguration = new ClusterConfiguration(args[0], nodes);
+        ClusterConfiguration clusterConfiguration = new ClusterConfiguration(nodeId, nodes);
         NodeManager nodeManager = new NodeManager(clusterConfiguration);
-        ShardManager shardManager = new ShardManager(nodeManager);
-        RequestHandler requestHandler = new RequestHandler(shardManager);
-        Response response = requestHandler.handleRequest("PUT|user:1|Sahil");
-        System.out.println(response.getPayload());
+        ShardManager shardManager = new ShardManager(nodeManager, clusterConfiguration);
+        RequestHandler requestHandler = new RequestHandler(shardManager, clusterConfiguration, nodeManager);
+
+        System.out.println("Initilized node on port "+port);
+
+        while(true) {
+            Socket socket = serverSocket.accept();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            Response response = requestHandler.handleRequest(socket, bufferedReader.readLine());
+            System.out.println(response.getPayload());
+        }
+
+
     }
     public static List<NodeInfo> initializeCluster() {
         NodeInfo nodeInfo = new NodeInfo("node-0",9090);

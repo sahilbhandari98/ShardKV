@@ -1,9 +1,13 @@
 package network;
 
 import node.KVNode;
+import node.NodeInfo;
+import node.NodeManager;
 import routing.ShardManager;
 
-import java.io.IOException;
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 import static network.Response.success;
 import static network.Response.value;
@@ -11,13 +15,28 @@ import static network.Response.value;
 public class RequestHandler {
 
     ShardManager shardManager;
+    ClusterConfiguration clusterConfiguration;
+    NodeManager nodeManager;
 
-    public RequestHandler(ShardManager shardManager) {
+    public RequestHandler(ShardManager shardManager, ClusterConfiguration clusterConfiguration, NodeManager nodeManager) {
         this.shardManager = shardManager;
+        this.clusterConfiguration = clusterConfiguration;
+        this.nodeManager = nodeManager;
     }
-    public Response handleRequest(String request) throws IOException {
+    public Response handleRequest(Socket socket, String request) throws IOException {
         Request req = RequestParser.requestParser(request);
-        KVNode node = shardManager.getNode(req.getKey());
+        NodeInfo node = shardManager.getNode(req.getKey());
+        Response response;
+        if(node.getNodeId().equals(clusterConfiguration.getCurrentNodeId())) {
+            response = executeLocally(req, nodeManager.getKvNode());
+        } else {
+            response = null;
+            remoteCall(socket, req, node);
+        }
+        return response;
+    }
+
+    public Response executeLocally(Request req, KVNode node) throws IOException {
         return switch (req.getOperation()) {
             case PUT -> {
                 System.out.println(req.getKey());
@@ -33,5 +52,19 @@ public class RequestHandler {
                 yield success(node.getNodeID());
             }
         };
+    }
+
+    public Response remoteCall(Socket socket, Request req, NodeInfo node) throws IOException {
+//        ServerSocket serverSocket = new ServerSocket(node.getPort());
+
+//        Socket socket = serverSocket.accept();
+        BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        bufferedWriter.write(req.getOperation().name()+"|"+req.getKey()+"|"+req.getValue()+"\n");
+        bufferedWriter.flush();
+
+
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+        return Response.success(bufferedReader.readLine());
     }
 }

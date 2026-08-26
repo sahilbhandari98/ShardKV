@@ -13,15 +13,18 @@ import java.util.Optional;
 public class ShardManager {
     private KeyPartitioner keyPartitioner;
     private NodeManager nodeManager;
+    private ClusterConfiguration clusterConfiguration;
 
-    public ShardManager(NodeManager nodeManager) {
+    public ShardManager(NodeManager nodeManager, ClusterConfiguration clusterConfiguration) {
         this.nodeManager = nodeManager;
+        this.clusterConfiguration = clusterConfiguration;
         this.keyPartitioner = new KeyPartitioner(nodeManager.clusterSize());
     }
-    public KVNode getNode(String key) throws IOException {
+    public NodeInfo getNode(String key) throws IOException {
         int shard = keyPartitioner.getShard(key);
         String nodeId = "node-"+shard;
         System.out.println("node id is "+nodeId);
-        return nodeManager.getKvNode();
+        return clusterConfiguration.getNode(nodeId);
     }
+
 }

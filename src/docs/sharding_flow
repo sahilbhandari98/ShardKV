@@ -1,0 +1,9 @@
+PUT user:1 Sahil
+
+arrives at node-0 - Main
+
+1. check which shard does user:1 belongs to - KeyPartitioner
+2. get the node that corresponds to that shard - ShardManager
+3. check if it belongs to local node or not - RequestHandler + ClusterConfiguration
+4. execute locally if local or else forward request to correct jvm - RequestHandler
+5. respond the status to client - RequestHandler
