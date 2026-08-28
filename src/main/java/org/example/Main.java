@@ -68,18 +68,28 @@ public class Main {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-            String request;
+            new Thread(() -> {
+                String request;
 
-            while((request = bufferedReader.readLine()) != null) {
-                Response response = requestHandler.handleRequest(request);
-                //System.out.println(response.getPayload());
+                try {
+                    while ((request = bufferedReader.readLine()) != null) {
 
-                bufferedWriter.write(response.getPayload() + "\n");
-                bufferedWriter.flush();
-            }
+                        //System.out.println(response.getPayload());
+
+                        try {
+                            Response response = requestHandler.handleRequest(request);
+                            bufferedWriter.write(response.getPayload() + "\n");
+                            bufferedWriter.flush();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                } catch (Exception ex) {
+                    //throw ex;
+                }
+            }).start();
+
         }
-
-
     }
     public static List<NodeInfo> initializeCluster() {
         NodeInfo nodeInfo = new NodeInfo("node-0",9090);
