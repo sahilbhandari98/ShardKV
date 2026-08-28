@@ -1,5 +1,6 @@
 package network;
 
+import KVStore.WAL.Operation;
 import node.KVNode;
 import node.NodeInfo;
 import node.NodeManager;
@@ -24,7 +25,9 @@ public class RequestHandler {
         this.nodeManager = nodeManager;
     }
     public Response handleRequest(String request) throws IOException {
+        System.out.println("raw request "+request);
         Request req = RequestParser.requestParser(request);
+        System.out.println(req.getOperation()+" :: "+req.getKey());
         NodeInfo node = shardManager.getNode(req.getKey());
         Response response;
         if(node.getNodeId().equals(clusterConfiguration.getCurrentNodeId())) {
@@ -57,12 +60,17 @@ public class RequestHandler {
 
         Socket socket = new Socket("localhost", node.getPort());
         BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-        bufferedWriter.write(req.getOperation().name()+"|"+req.getKey()+"|"+req.getValue()+"\n");
+        if(Operation.PUT.equals(req.getOperation())) {
+            bufferedWriter.write(req.getOperation().name() + "|" + req.getKey() + "|" + req.getValue() + "\n");
+        } else {
+            bufferedWriter.write(req.getOperation().name() + "|" + req.getKey() + "\n");
+        }
         bufferedWriter.flush();
 
 
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-        return Response.success(bufferedReader.readLine());
+        String remoteCallResponse = bufferedReader.readLine();
+        System.out.println(remoteCallResponse);
+        return Response.success(remoteCallResponse);
     }
 }
