@@ -71,6 +71,9 @@ public class RequestHandler {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String remoteCallResponse = bufferedReader.readLine();
         System.out.println(remoteCallResponse);
-        return Response.success(remoteCallResponse);
+        if(Operation.PUT.equals(req.getOperation())) {
+            return Response.success(remoteCallResponse);
+        }
+        return Response.value(node.getNodeId(), remoteCallResponse);
     }
 }
