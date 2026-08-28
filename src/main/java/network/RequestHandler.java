@@ -58,22 +58,23 @@ public class RequestHandler {
 
     public Response remoteCall( Request req, NodeInfo node) throws IOException {
 
-        Socket socket = new Socket("localhost", node.getPort());
-        BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-        if(RequestOperation.PUT.equals(req.getOperation())) {
-            bufferedWriter.write(req.getOperation().name() + "|" + req.getKey() + "|" + req.getValue() + "\n");
-        } else {
-            bufferedWriter.write(req.getOperation().name() + "|" + req.getKey() + "\n");
-        }
-        bufferedWriter.flush();
+        try(Socket socket = new Socket("localhost", node.getPort())) {
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            if (RequestOperation.PUT.equals(req.getOperation())) {
+                bufferedWriter.write(req.getOperation().name() + "|" + req.getKey() + "|" + req.getValue() + "\n");
+            } else {
+                bufferedWriter.write(req.getOperation().name() + "|" + req.getKey() + "\n");
+            }
+            bufferedWriter.flush();
 
 
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        String remoteCallResponse = bufferedReader.readLine();
-        System.out.println(remoteCallResponse);
-        if(RequestOperation.PUT.equals(req.getOperation())) {
-            return Response.success(remoteCallResponse);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String remoteCallResponse = bufferedReader.readLine();
+            System.out.println(remoteCallResponse);
+            if (RequestOperation.PUT.equals(req.getOperation())) {
+                return Response.success(remoteCallResponse);
+            }
+            return Response.value(node.getNodeId(), remoteCallResponse);
         }
-        return Response.value(node.getNodeId(), remoteCallResponse);
     }
 }
