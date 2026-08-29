@@ -85,7 +85,7 @@ public class Main {
                         }
                     }
                 } catch (Exception ex) {
-                    //throw ex;
+                    throw new RuntimeException(ex.getMessage());
                 }
             }).start();
 
