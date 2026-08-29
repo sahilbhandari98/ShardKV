@@ -32,13 +32,22 @@ public class RequestHandlerTest {
 
     @Test
     public void shouldRouteRequestToRemoteNode() throws IOException {
-        Response actualResponse = requestHandler.handleRequest("PUT|user:2|Sahil_1");
-        Response actualResponse1 = requestHandler.handleRequest("PUT|user:1|Sahil_1");
+        Response actualResponsePUT = requestHandler.handleRequest("PUT|user:2|Sahil_1");
+        Response actualResponsePUT1 = requestHandler.handleRequest("PUT|user:1|Sahil_1");
+        Response actualResponseGET = requestHandler.handleRequest("GET|user:1");
+        Response actualResponseDELETE = requestHandler.handleRequest("DELETE|user:1");
+        Response actualResponse_GET_AFTER_DELETE = requestHandler.handleRequest("GET|user:1");
         Response expectedResponse = new Response(Response.Status.SUCCESS, "node-2", "operation successfull");
         Response expectedResponse1 = new Response(Response.Status.SUCCESS, "node-1", "operation successfull");
+        Response expectedResponseGET = new Response(Response.Status.VALUE, "node-1", "Sahil_1");
+        Response expectedResponseDELETE = new Response(Response.Status.VALUE, "node-1", "operation successfull");
+        Response expectedResponseGET_AFTER_DELETE = new Response(Response.Status.VALUE, "node-1", "null");
 
-        assertEquals(actualResponse, expectedResponse);
-        assertEquals(actualResponse1, expectedResponse1);
+        assertEquals(expectedResponse, actualResponsePUT);
+        assertEquals(expectedResponse1, actualResponsePUT1);
+        assertEquals(expectedResponseGET, actualResponseGET);
+        assertEquals(expectedResponseDELETE, actualResponseDELETE);
+        assertEquals(expectedResponseGET_AFTER_DELETE, actualResponse_GET_AFTER_DELETE);
     }
 
     @Test
@@ -46,6 +55,6 @@ public class RequestHandlerTest {
         Response actualResponse = requestHandler.handleRequest("PUT|user:0|Sahil_1");
         Response expectedResponse = new Response(Response.Status.SUCCESS, "node-0", "operation successfull");
 
-        assertEquals(actualResponse, expectedResponse);
+        assertEquals(expectedResponse, actualResponse);
     }
 }
