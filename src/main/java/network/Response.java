@@ -48,4 +48,13 @@ public class Response {
     public int hashCode() {
         return Objects.hash(payload, shard, status);
     }
+
+    @Override
+    public String toString() {
+        return "Response{" +
+                "payload='" + payload + '\'' +
+                ", shard='" + shard + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }

@@ -72,7 +72,7 @@ public class RequestHandler {
             String remoteCallResponse = bufferedReader.readLine();
             System.out.println(remoteCallResponse);
             if (RequestOperation.PUT.equals(req.getOperation())) {
-                return Response.success(remoteCallResponse);
+                return Response.success(node.getNodeId());
             }
             return Response.value(node.getNodeId(), remoteCallResponse);
         }

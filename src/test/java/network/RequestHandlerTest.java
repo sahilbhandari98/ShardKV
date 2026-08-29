@@ -2,6 +2,7 @@ package network;
 
 import node.NodeInfo;
 import node.NodeManager;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import routing.ShardManager;
@@ -16,18 +17,33 @@ public class RequestHandlerTest {
 
     @TempDir
     Path tempDir;
+    RequestHandler requestHandler;
 
-    @Test
-    public void shouldTestRequestHandling() throws IOException {
-
+    @BeforeEach
+    public void setup() throws IOException {
         NodeInfo nodeInfo = new NodeInfo("node-0", 9090);
         NodeInfo nodeInfo1 = new NodeInfo("node-1", 9091);
-        ClusterConfiguration clusterConfiguration = new ClusterConfiguration("node-0", List.of(nodeInfo, nodeInfo1));
+        NodeInfo nodeInfo2 = new NodeInfo("node-2", 9092);
+        ClusterConfiguration clusterConfiguration = new ClusterConfiguration("node-0", List.of(nodeInfo, nodeInfo1, nodeInfo2));
         NodeManager nodeManager = new NodeManager(clusterConfiguration, tempDir.resolve("node-0.data"));
         ShardManager shardManager = new ShardManager(nodeManager, clusterConfiguration);
-        RequestHandler requestHandler = new RequestHandler(shardManager, clusterConfiguration, nodeManager);
+         requestHandler = new RequestHandler(shardManager, clusterConfiguration, nodeManager);
+    }
 
-        Response actualResponse = requestHandler.handleRequest("PUT|user:1|Sahil_1");
+    @Test
+    public void shouldRouteRequestToRemoteNode() throws IOException {
+        Response actualResponse = requestHandler.handleRequest("PUT|user:2|Sahil_1");
+        Response actualResponse1 = requestHandler.handleRequest("PUT|user:1|Sahil_1");
+        Response expectedResponse = new Response(Response.Status.SUCCESS, "node-2", "operation successfull");
+        Response expectedResponse1 = new Response(Response.Status.SUCCESS, "node-1", "operation successfull");
+
+        assertEquals(actualResponse, expectedResponse);
+        assertEquals(actualResponse1, expectedResponse1);
+    }
+
+    @Test
+    public void shouldTestLocalNodeExecution() throws IOException {
+        Response actualResponse = requestHandler.handleRequest("PUT|user:0|Sahil_1");
         Response expectedResponse = new Response(Response.Status.SUCCESS, "node-0", "operation successfull");
 
         assertEquals(actualResponse, expectedResponse);
