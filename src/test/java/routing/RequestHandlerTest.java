@@ -20,14 +20,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class RequestHandlerTest {
 
     @TempDir
-    Path tempPath;
+    Path tempDir;
 
     @Test
     public void shouldTestRequestHandling() throws IOException {
+
         NodeInfo nodeInfo = new NodeInfo("node-0", 9090);
         NodeInfo nodeInfo1 = new NodeInfo("node-1", 9091);
         ClusterConfiguration clusterConfiguration = new ClusterConfiguration("node-0", List.of(nodeInfo, nodeInfo1));
-        NodeManager nodeManager = new NodeManager(clusterConfiguration, "node-0.data");
+        NodeManager nodeManager = new NodeManager(clusterConfiguration, tempDir.resolve("node-0.data"));
         ShardManager shardManager = new ShardManager(nodeManager, clusterConfiguration);
         RequestHandler requestHandler = new RequestHandler(shardManager, clusterConfiguration, nodeManager);
 

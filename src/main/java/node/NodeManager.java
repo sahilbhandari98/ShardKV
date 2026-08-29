@@ -12,7 +12,7 @@ public class NodeManager {
     private final ClusterConfiguration clusterConfiguration;
     private final KVNode kvNode;
 
-    public NodeManager(ClusterConfiguration clusterConfiguration, String walName) throws IOException {
+    public NodeManager(ClusterConfiguration clusterConfiguration, Path walName) throws IOException {
         this.clusterConfiguration = clusterConfiguration;
         Optional<NodeInfo> nodeInfo = clusterConfiguration
                 .getAllNodes()
@@ -20,7 +20,7 @@ public class NodeManager {
                 .filter(node -> node.getNodeId().equals(clusterConfiguration.getCurrentNodeId()))
                 .findAny();
         this.kvNode = new KVNode(clusterConfiguration.getCurrentNodeId(), nodeInfo.get().getPort(),
-                new PersistedKVStore<>(new FileWriteAheadLog(Path.of("data",walName))));
+                new PersistedKVStore<>(new FileWriteAheadLog(walName)));
     }
 
     public KVNode getKvNode() {

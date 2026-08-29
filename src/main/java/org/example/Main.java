@@ -57,7 +57,7 @@ public class Main {
 
         List<NodeInfo> nodes = initializeCluster();
         ClusterConfiguration clusterConfiguration = new ClusterConfiguration(nodeId, nodes);
-        NodeManager nodeManager = new NodeManager(clusterConfiguration, walName);
+        NodeManager nodeManager = new NodeManager(clusterConfiguration, Path.of("data", walName));
         ShardManager shardManager = new ShardManager(nodeManager, clusterConfiguration);
         RequestHandler requestHandler = new RequestHandler(shardManager, clusterConfiguration, nodeManager);
 
