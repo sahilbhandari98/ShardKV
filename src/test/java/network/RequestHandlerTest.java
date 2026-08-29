@@ -8,10 +8,12 @@ import org.junit.jupiter.api.io.TempDir;
 import routing.ShardManager;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class RequestHandlerTest {
 
@@ -56,5 +58,10 @@ public class RequestHandlerTest {
         Response expectedResponse = new Response(Response.Status.SUCCESS, "node-0", "operation successfull");
 
         assertEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    public void shouldThrowExceptionforRemoteCallFailure() throws IOException {
+       assertThrows(ConnectException.class, () -> requestHandler.handleRequest("PUT|user:2|Sahil_1"));
     }
 }
