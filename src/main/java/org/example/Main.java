@@ -1,12 +1,8 @@
 package org.example;
 
-
-import KVStore.WAL.FileWriteAheadLog;
-import KVStore.strategy.PersistedKVStore;
 import network.ClusterConfiguration;
 import network.RequestHandler;
 import network.Response;
-import node.KVNode;
 import node.NodeInfo;
 import node.NodeManager;
 import routing.ShardManager;
@@ -14,15 +10,11 @@ import routing.ShardManager;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.nio.Buffer;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-
 
 public class Main {
-    public static void main(String[] args) throws ExecutionException, InterruptedException, IOException {
+    public static void main(String[] args) throws IOException {
         String nodeId = args[0];
         int port = Integer.parseInt(args[1]);
         String walName = args[2];
@@ -34,7 +26,7 @@ public class Main {
         ShardManager shardManager = new ShardManager(nodeManager, clusterConfiguration);
         RequestHandler requestHandler = new RequestHandler(shardManager, clusterConfiguration, nodeManager);
 
-        System.out.println("Initilized node on port "+port);
+        System.out.println("Initialized node on port "+port);
 
         while(true) {
             Socket socket = serverSocket.accept();
@@ -55,7 +47,7 @@ public class Main {
                         }
                     }
                 } catch (Exception ex) {
-                    throw new RuntimeException(ex.getMessage());
+                    ex.printStackTrace();
                 }
             }).start();
 
