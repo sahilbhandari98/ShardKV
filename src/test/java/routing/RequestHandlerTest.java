@@ -2,9 +2,12 @@ package routing;
 
 import KVStore.WAL.FileWriteAheadLog;
 import KVStore.strategy.PersistedKVStore;
+import network.ClusterConfiguration;
 import network.RequestHandler;
 import network.Response;
 import node.KVNode;
+import node.NodeInfo;
+import node.NodeManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -21,16 +24,16 @@ public class RequestHandlerTest {
 
     @Test
     public void shouldTestRequestHandling() throws IOException {
-//        KVNode node = new KVNode("node-0", new PersistedKVStore
-//                (new FileWriteAheadLog(tempPath.resolve(Path.of("data","wal0.log")))));
-//        KVNode node1 = new KVNode("node-1", new PersistedKVStore
-//                (new FileWriteAheadLog(tempPath.resolve(Path.of("data","wal1.log")))));
-//        ShardManager shardManager = new ShardManager(List.of(node, node1));
-//        RequestHandler requestHandler = new RequestHandler(shardManager);
-//
-//        Response actualResponse = requestHandler.handleRequest("PUT|user:1|Sahil");
-//        Response expectedResponse = new Response(Response.Status.SUCCESS, "node-0", "operation successfull");
-//
-//        assertEquals(actualResponse, expectedResponse);
+        NodeInfo nodeInfo = new NodeInfo("node-0", 9090);
+        NodeInfo nodeInfo1 = new NodeInfo("node-1", 9091);
+        ClusterConfiguration clusterConfiguration = new ClusterConfiguration("node-0", List.of(nodeInfo, nodeInfo1));
+        NodeManager nodeManager = new NodeManager(clusterConfiguration, "node-0.data");
+        ShardManager shardManager = new ShardManager(nodeManager, clusterConfiguration);
+        RequestHandler requestHandler = new RequestHandler(shardManager, clusterConfiguration, nodeManager);
+
+        Response actualResponse = requestHandler.handleRequest("PUT|user:1|Sahil_1");
+        Response expectedResponse = new Response(Response.Status.SUCCESS, "node-0", "operation successfull");
+
+        assertEquals(actualResponse, expectedResponse);
     }
 }
