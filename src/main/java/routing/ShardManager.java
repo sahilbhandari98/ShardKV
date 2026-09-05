@@ -20,11 +20,15 @@ public class ShardManager {
         this.clusterConfiguration = clusterConfiguration;
         this.keyPartitioner = new KeyPartitioner(nodeManager.clusterSize());
     }
-    public NodeInfo getNode(String key) throws IOException {
+    public ShardPlacement getShardPlacement(String key) throws IOException {
         int shard = keyPartitioner.getShard(key);
-        String nodeId = "node-"+shard;
-        System.out.println("node id is "+nodeId);
-        return clusterConfiguration.getNode(nodeId);
+        String primaryNodeId = "node-"+shard;
+        String replicaNodeId = "node-"+((shard + 1)% nodeManager.clusterSize());
+        System.out.println("node id is "+primaryNodeId);
+        NodeInfo primaryNode = clusterConfiguration.getNode(primaryNodeId);
+        NodeInfo replicaNode = clusterConfiguration.getNode(replicaNodeId);
+
+        return new ShardPlacement(primaryNode, List.of(replicaNode));
     }
 
 }

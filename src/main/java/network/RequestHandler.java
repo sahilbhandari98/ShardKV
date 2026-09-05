@@ -5,6 +5,7 @@ import node.KVNode;
 import node.NodeInfo;
 import node.NodeManager;
 import routing.ShardManager;
+import routing.ShardPlacement;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -28,12 +29,12 @@ public class RequestHandler {
         System.out.println("raw request "+request);
         Request req = RequestParser.requestParser(request);
         System.out.println(req.getOperation()+" :: "+req.getKey());
-        NodeInfo node = shardManager.getNode(req.getKey());
+        ShardPlacement shardPlacement = shardManager.getShardPlacement(req.getKey());
         Response response;
-        if(node.getNodeId().equals(clusterConfiguration.getCurrentNodeId())) {
+        if(shardPlacement.getPrimary().getNodeId().equals(clusterConfiguration.getCurrentNodeId())) {
             response = executeLocally(req, nodeManager.getKvNode());
         } else {
-            response = remoteCall(req, node);
+            response = remoteCall(req, shardPlacement.getPrimary());
         }
         return response;
     }
