@@ -33,10 +33,10 @@ public class RequestHandlerTest {
         ClusterConfiguration clusterConfiguration2 = new ClusterConfiguration("node-2", List.of(nodeInfo, nodeInfo1, nodeInfo2));
         NodeManager nodeManager = new NodeManager(clusterConfiguration, tempDir.resolve("node-0-tmp.data"));
         NodeManager nodeManager1 = new NodeManager(clusterConfiguration1, tempDir.resolve("node-1-tmp.data"));
-        NodeManager nodeManager2 = new NodeManager(clusterConfiguration1, tempDir.resolve("node-2-tmp.data"));
+        NodeManager nodeManager2 = new NodeManager(clusterConfiguration2, tempDir.resolve("node-2-tmp.data"));
         ShardManager shardManager = new ShardManager(nodeManager, clusterConfiguration);
-        ShardManager shardManager1 = new ShardManager(nodeManager1, clusterConfiguration);
-        ShardManager shardManager2 = new ShardManager(nodeManager2, clusterConfiguration);
+        ShardManager shardManager1 = new ShardManager(nodeManager1, clusterConfiguration1);
+        ShardManager shardManager2 = new ShardManager(nodeManager2, clusterConfiguration2);
          requestHandler = new RequestHandler(shardManager, clusterConfiguration, nodeManager);
          requestHandler1 = new RequestHandler(shardManager1, clusterConfiguration1, nodeManager1);
          requestHandler2 = new RequestHandler(shardManager2, clusterConfiguration2, nodeManager2);
@@ -77,7 +77,7 @@ public class RequestHandlerTest {
 
     @Test
     public void shouldReplicateToReplicas() throws IOException {
-        Response actualResponsePUT = requestHandler.handleRequest("PUT|user:0|Sahil__1");
+        Response actualResponsePUT = requestHandler.handleRequest("PUT|user:0|Sahil___1");
         Response actualResponseGET = requestHandler.handleRequest("GET|user:0");
         Response expectedResponseGET = new Response(Response.Status.VALUE, "node-0", "Sahil__1");
         assertEquals(expectedResponseGET, actualResponseGET);
