@@ -12,13 +12,13 @@ public class RequestParser {
         RequestOperation operation = RequestOperation.valueOf(values[0]);
 
         return switch (operation) {
-            case PUT -> {
+            case PUT,RPUT -> {
                 if(values.length != 3) {
                     throw new IllegalArgumentException("Invalid operation");
                 }
                 yield new Request(operation, values[1], values[2]);
             }
-            case GET,DELETE -> {
+            case GET,DELETE,RDELETE -> {
                 if(values.length != 2) {
                     throw new IllegalArgumentException("Invalid Operation");
                 }
