@@ -29,6 +29,10 @@ public class ShardManagerTest {
         ShardManager shardManager = new ShardManager(nodeManager, clusterConfiguration);
         assertEquals(nodeInfo, shardManager.getShardPlacement("user:1").getPrimary());
         assertEquals(nodeInfo1, shardManager.getShardPlacement("user:2").getPrimary());
-        assertEquals(shardManager.getShardPlacement("user:3").getPrimary(), shardManager.getShardPlacement("user:3").getPrimary());
+        assertEquals(nodeInfo1, shardManager.getShardPlacement("user:1").getReplicas().get(0));
+        assertEquals(shardManager.getShardPlacement("user:3").getPrimary(),
+                shardManager.getShardPlacement("user:3").getPrimary());
+        assertEquals(shardManager.getShardPlacement("user:3").getReplicas().get(0),
+                shardManager.getShardPlacement("user:3").getReplicas().get(0));
     }
 }
