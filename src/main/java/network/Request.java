@@ -11,7 +11,9 @@ public class Request {
     public Request(RequestOperation operation, String key) {
         this.operation = operation;
         this.key = key;
-        this.isReplicationRequest = false;
+        if(RequestOperation.RDELETE.equals(operation)) {
+            this.isReplicationRequest = true;
+        }
     }
 
     public Request(RequestOperation operation, String key, String value) {

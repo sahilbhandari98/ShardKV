@@ -37,6 +37,9 @@ public class RequestHandler {
         Response response;
         if(shardPlacement.getPrimary().getNodeId().equals(clusterConfiguration.getCurrentNodeId())) {
             response = executeLocally(req, nodeManager.getKvNode());
+            if(RequestOperation.GET.equals(req.getOperation())) {
+                return response;
+            }
             for(NodeInfo nodeInfo: shardPlacement.getReplicas()) {
                 req.setReplicationOperation();
                 System.out.println("after setting re op "+req);
