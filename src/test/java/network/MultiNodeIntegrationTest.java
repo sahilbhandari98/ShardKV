@@ -5,13 +5,12 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.*;
 import java.net.ConnectException;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ReplicationTest {
+public class MultiNodeIntegrationTest {
 
     @TempDir
     Path tempDir;
