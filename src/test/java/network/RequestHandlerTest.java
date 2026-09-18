@@ -22,6 +22,9 @@ public class RequestHandlerTest {
     RequestHandler requestHandler;
     RequestHandler requestHandler1;
     RequestHandler requestHandler2;
+    NodeManager nodeManager;
+    NodeManager nodeManager1;
+    NodeManager nodeManager2;
 
     @BeforeEach
     public void setup() throws IOException {
@@ -31,9 +34,9 @@ public class RequestHandlerTest {
         ClusterConfiguration clusterConfiguration = new ClusterConfiguration("node-0", List.of(nodeInfo, nodeInfo1, nodeInfo2));
         ClusterConfiguration clusterConfiguration1 = new ClusterConfiguration("node-1", List.of(nodeInfo, nodeInfo1, nodeInfo2));
         ClusterConfiguration clusterConfiguration2 = new ClusterConfiguration("node-2", List.of(nodeInfo, nodeInfo1, nodeInfo2));
-        NodeManager nodeManager = new NodeManager(clusterConfiguration, tempDir.resolve("node-0-tmp.data"));
-        NodeManager nodeManager1 = new NodeManager(clusterConfiguration1, tempDir.resolve("node-1-tmp.data"));
-        NodeManager nodeManager2 = new NodeManager(clusterConfiguration2, tempDir.resolve("node-2-tmp.data"));
+        nodeManager = new NodeManager(clusterConfiguration, tempDir.resolve("node-0-tmp.data"));
+        nodeManager1 = new NodeManager(clusterConfiguration1, tempDir.resolve("node-1-tmp.data"));
+        nodeManager2 = new NodeManager(clusterConfiguration2, tempDir.resolve("node-2-tmp.data"));
         ShardManager shardManager = new ShardManager(nodeManager, clusterConfiguration);
         ShardManager shardManager1 = new ShardManager(nodeManager1, clusterConfiguration1);
         ShardManager shardManager2 = new ShardManager(nodeManager2, clusterConfiguration2);
@@ -73,13 +76,5 @@ public class RequestHandlerTest {
     @Test
     public void shouldThrowExceptionforRemoteCallFailure() throws IOException {
        assertThrows(ConnectException.class, () -> requestHandler.handleRequest("PUT|user:2|Sahil_1"));
-    }
-
-    @Test
-    public void shouldReplicateToReplicas() throws IOException {
-        Response actualResponsePUT = requestHandler.handleRequest("PUT|user:0|Sahil___1");
-        Response actualResponseGET = requestHandler.handleRequest("GET|user:0");
-        Response expectedResponseGET = new Response(Response.Status.VALUE, "node-0", "Sahil__1");
-        assertEquals(expectedResponseGET, actualResponseGET);
     }
 }

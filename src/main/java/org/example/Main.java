@@ -17,12 +17,12 @@ public class Main {
     public static void main(String[] args) throws IOException {
         String nodeId = args[0];
         int port = Integer.parseInt(args[1]);
-        String walName = args[2];
+        String walPath = args[2];
         ServerSocket serverSocket = new ServerSocket(port);
 
         List<NodeInfo> nodes = initializeCluster();
         ClusterConfiguration clusterConfiguration = new ClusterConfiguration(nodeId, nodes);
-        NodeManager nodeManager = new NodeManager(clusterConfiguration, Path.of("data", walName));
+        NodeManager nodeManager = new NodeManager(clusterConfiguration, Path.of( walPath));
         ShardManager shardManager = new ShardManager(nodeManager, clusterConfiguration);
         RequestHandler requestHandler = new RequestHandler(shardManager, clusterConfiguration, nodeManager);
 
