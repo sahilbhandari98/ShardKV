@@ -41,9 +41,10 @@ public class RequestHandler {
                 return response;
             }
             for(NodeInfo nodeInfo: shardPlacement.getReplicas()) {
+                Request replicationRequest = req.getReplicationRequest();
                 req.setReplicationOperation();
                 System.out.println("after setting re op "+req);
-                Response replicationResponse = remoteCall(req,nodeInfo);
+                Response replicationResponse = remoteCall(replicationRequest,nodeInfo);
             }
         } else {
             response = remoteCall(req, shardPlacement.getPrimary());

@@ -2,6 +2,8 @@ package network;
 
 import KVStore.WAL.Operation;
 
+import java.util.Optional;
+
 public class Request {
     private RequestOperation operation;
     private String key;
@@ -50,6 +52,15 @@ public class Request {
             this.operation = RequestOperation.RDELETE;
             this.isReplicationRequest = true;
         }
+    }
+
+    public Request getReplicationRequest() {
+        if(RequestOperation.PUT.equals(this.getOperation())) {
+            return new Request(this.operation, this.key, this.value);
+        } else if(RequestOperation.DELETE.equals(this.getOperation())) {
+            return new Request(this.operation, this.key);
+        }
+       return null;
     }
 
     @Override
