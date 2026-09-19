@@ -13,12 +13,18 @@ public class Request {
     public Request(RequestOperation operation, String key) {
         this.operation = operation;
         this.key = key;
+        if(RequestOperation.RDELETE.equals(operation)) {
+            this.isReplicationRequest = true;
+        }
     }
 
     public Request(RequestOperation operation, String key, String value) {
         this.operation = operation;
         this.key = key;
         this.value = value;
+        if(RequestOperation.RPUT.equals(operation) || RequestOperation.RDELETE.equals(operation)) {
+            this.isReplicationRequest = true;
+        }
     }
 
     public RequestOperation getOperation() {
@@ -43,7 +49,6 @@ public class Request {
         } else if(RequestOperation.DELETE.equals(this.getOperation())) {
             return new Request(RequestOperation.RDELETE, this.key);
         }
-        this.isReplicationRequest = true;
        return null;
     }
 
