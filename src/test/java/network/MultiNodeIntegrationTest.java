@@ -1,5 +1,8 @@
 package network;
 
+import KVStore.KVStore;
+import KVStore.WAL.FileWriteAheadLog;
+import KVStore.strategy.PersistedKVStore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -9,6 +12,7 @@ import java.net.Socket;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class MultiNodeIntegrationTest {
 
@@ -28,12 +32,27 @@ public class MultiNodeIntegrationTest {
             waitForPort(9091);
             waitForPort(9092);
 
-            System.out.println("send requests for integration tests");
-            String response = sendRequest("PUT|user:test|replication_key_value_test");
+            String response = sendRequest(9090,"PUT|user:test|replication_key_value_test");
             assertEquals("operation successfull", response);
 
-            String getResponse = sendRequest("GET|user:test");
+            String getResponse = sendRequest(9090,"GET|user:test");
             assertEquals("replication_key_value_test", getResponse);
+
+            FileWriteAheadLog fileWriteAheadLog = new FileWriteAheadLog(tempDir.resolve("node-2.data"));
+            PersistedKVStore<String, String> persistedKVStore = new PersistedKVStore<>(fileWriteAheadLog);
+            String replicatedResponse = persistedKVStore.get("user:test");
+            assertEquals("replication_key_value_test", replicatedResponse);
+
+            String deleteResponse = sendRequest(9090,"DELETE|user:test");
+            assertEquals("operation successfull", deleteResponse);
+
+            String getResponseAfterDelete = sendRequest(9090,"GET|user:test");
+            assertEquals("null", getResponseAfterDelete);
+            // Re-read replica WAL to verify DELETE was replicated
+            persistedKVStore.recovery();
+            String replicatedDeleteResponse = persistedKVStore.get("user:test");
+            assertNull(replicatedDeleteResponse);
+
         } finally {
             node1.destroy();
             node2.destroy();
@@ -52,19 +71,19 @@ public class MultiNodeIntegrationTest {
         }
     }
 
-    public String sendRequest(String request) throws IOException {
-        System.out.println("start on port 9090");
-        Socket socket = new Socket("localhost", 9090);
+    public String sendRequest(int port, String request) throws IOException {
+        try (Socket socket = new Socket("localhost", port)) {
 
-        System.out.println("write using output stream");
-        BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            System.out.println("write using output stream");
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-        bufferedWriter.write(request + "\n");
-        bufferedWriter.flush();
+            bufferedWriter.write(request + "\n");
+            bufferedWriter.flush();
 
 
-        return bufferedReader.readLine();
+            return bufferedReader.readLine();
+        }
     }
 
     public Process startNode(String nodeId, String port, String walPath) throws IOException {
