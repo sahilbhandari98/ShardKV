@@ -11,8 +11,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import static network.Response.success;
-import static network.Response.value;
+import static network.Response.*;
 
 public class RequestHandler {
 
@@ -45,6 +44,9 @@ public class RequestHandler {
                 req.setReplicationOperation();
                 System.out.println("after setting re op "+req);
                 Response replicationResponse = remoteCall(replicationRequest,nodeInfo);
+                if(Status.ERROR.equals(replicationResponse.getStatus())) {
+                    response = Response.failure(shardPlacement.getPrimary().getNodeId());
+                }
             }
         } else {
             response = remoteCall(req, shardPlacement.getPrimary());
@@ -89,6 +91,8 @@ public class RequestHandler {
                 return Response.success(node.getNodeId());
             }
             return Response.value(node.getNodeId(), remoteCallResponse);
+        } catch (Exception e) {
+            return Response.failure(node.getNodeId());
         }
     }
 }

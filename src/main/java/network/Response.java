@@ -21,6 +21,10 @@ public class Response {
         return new Response(Status.SUCCESS, shard, "operation successfull");
     }
 
+    public static Response failure(String shard) {
+        return new Response(Status.ERROR, shard, "operation failed");
+    }
+
     public static Response value(String shard, String value) {
         return new Response(Status.VALUE, shard, value);
     }
